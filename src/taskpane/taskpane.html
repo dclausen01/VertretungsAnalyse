@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vertretungsanalyse Add-in</title>
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+
+    <!-- For more information on Fluent UI, visit https://developer.microsoft.com/fluentui -->
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css"/>
+
+    <!-- Template styles -->
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+        }
+        
+        #app-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ms-Button {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        #analysis-result {
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-height: 100px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            color: #00008B; /* Dark blue color as requested */
+            white-space: pre-wrap;
+            display: none;
+        }
+        
+        .ms-progress {
+            width: 180px;
+            display: none;
+        }
+        
+        .ms-MessageBar {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="ms-font-m ms-Fabric">
+    <div id="app-body">
+        <div class="ms-font-xl">Vertretungsanalyse</div>
+        <p class="ms-font-m">Analysiert Lehrermails und erstellt strukturierte Regelungsvorschläge für UNTIS.</p>
+        
+        <button class="ms-Button ms-Button--primary" id="analyze-button">
+            <span class="ms-Button-label">E-Mail analysieren</span>
+        </button>
+        
+        <div class="ms-progress">
+            <div class="ms-Spinner"></div>
+            <div class="ms-font-s">Analysiere E-Mail...</div>
+        </div>
+        
+        <div class="ms-MessageBar ms-MessageBar--error">
+            <div class="ms-MessageBar-content">
+                <div class="ms-MessageBar-text"></div>
+            </div>
+        </div>
+        
+        <div id="analysis-result"></div>
+    </div>
+</body>
+</html>
