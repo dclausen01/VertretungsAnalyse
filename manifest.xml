@@ -29,6 +29,12 @@
   <!-- Domains that will be allowed when navigating. For example, if you use ShowTaskpane and then have an href link, navigation will only be allowed if the domain is on this list. -->
   <AppDomains>
     <AppDomain>https://localhost:3000</AppDomain>
+    <AppDomain>https://api.openai.com</AppDomain>
+    <AppDomain>https://outlook.office.com</AppDomain>
+    <AppDomain>https://outlook.office365.com</AppDomain>
+    <AppDomain>https://outlook.live.com</AppDomain>
+    <AppDomain>https://exchange.bbz-rd-eck.de</AppDomain>
+
   </AppDomains>
   <!--End Basic Settings. -->
 

@@ -6,7 +6,7 @@
 /* global document, Office */
 
 import { analyzeEmailWithOpenAI, getApiKey, storeApiKey } from '../services/openai-service.js';
-import { formatDateRangeWithWeekdays, isValidApiKeyFormat, storeInRoamingSettings, getFromRoamingSettings } from '../helpers/utilities.js';
+import { formatDateWithWeekday, formatDateRangeWithWeekdays, isValidApiKeyFormat, storeInRoamingSettings, getFromRoamingSettings } from '../helpers/utilities.js';
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Outlook) {
@@ -88,24 +88,55 @@ function getEmailHeaders(item) {
  * @returns {Promise<string>} - The API key
  */
 async function getOrPromptForApiKey() {
-  // Try to get the API key from storage
-  let apiKey = getApiKey();
-  
-  // If no API key is found, prompt the user to enter it
-  if (!apiKey) {
-    apiKey = prompt("Please enter your OpenAI API key:");
+  try {
+    // First try to get the API key from roaming settings (more reliable in OWA)
+    let apiKey = getFromRoamingSettings('openai_api_key');
     
-    // Validate the API key format
-    if (!isValidApiKeyFormat(apiKey)) {
-      throw new Error("Invalid API key format. Please enter a valid OpenAI API key.");
+    // If not found in roaming settings, try localStorage (might not work in OWA)
+    if (!apiKey) {
+      try {
+        apiKey = getApiKey();
+      } catch (error) {
+        console.warn("Error accessing localStorage:", error);
+        // Continue with null apiKey, will prompt user below
+      }
     }
     
-    // Store the API key
-    storeApiKey(apiKey);
-    storeInRoamingSettings('openai_api_key', apiKey);
+    // If no API key is found, prompt the user to enter it
+    if (!apiKey) {
+      apiKey = prompt("Please enter your OpenAI API key:");
+      
+      // Handle case where user cancels the prompt
+      if (!apiKey) {
+        throw new Error("API key is required to analyze emails.");
+      }
+      
+      // Validate the API key format
+      if (!isValidApiKeyFormat(apiKey)) {
+        throw new Error("Invalid API key format. Please enter a valid OpenAI API key.");
+      }
+      
+      // Try to store the API key in both places
+      try {
+        storeApiKey(apiKey);
+      } catch (error) {
+        console.warn("Could not store API key in localStorage:", error);
+        // Continue anyway, we'll still try roaming settings
+      }
+      
+      try {
+        storeInRoamingSettings('openai_api_key', apiKey);
+      } catch (error) {
+        console.warn("Could not store API key in roaming settings:", error);
+        // If both storage methods fail, we'll just use the key for this session
+      }
+    }
+    
+    return apiKey;
+  } catch (error) {
+    console.error("Error in getOrPromptForApiKey:", error);
+    throw new Error("Failed to get API key: " + error.message);
   }
-  
-  return apiKey;
 }
 
 /**

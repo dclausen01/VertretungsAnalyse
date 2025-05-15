@@ -16,10 +16,10 @@ Bevor Sie beginnen, stellen Sie sicher, dass Sie Folgendes haben:
 
 ```bash
 # Repository klonen
-git clone https://github.com/yourusername/vertretungsanalyse-addin.git
+git clone https://github.com/yourusername/VertretungsAnalyse.git
 
 # In das Projektverzeichnis wechseln
-cd vertretungsanalyse-addin
+cd VertretungsAnalyse
 
 # Abhängigkeiten installieren
 npm install

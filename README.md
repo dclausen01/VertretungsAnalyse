@@ -72,10 +72,13 @@ vertretungsanalyse-addin/
 │   ├── helpers/             # Hilfsfunktionen
 │   ├── services/            # Dienste (z.B. OpenAI API)
 │   └── taskpane/            # Hauptlogik und UI
-├── manifest.xml             # Add-in-Manifest
+├── VertretungsAnalyse/      # Referenz-Template (nicht für Produktion)
+├── manifest.xml             # Add-in-Manifest (Hauptversion)
 ├── package.json             # Projektkonfiguration
 └── webpack.config.js        # Build-Konfiguration
 ```
+
+**Hinweis:** Der Ordner `VertretungsAnalyse` enthält eine ältere Template-Version des Add-ins und wird nur als Referenz beibehalten. Für die Entwicklung und Bereitstellung sollte die Hauptversion des Projekts verwendet werden.
 
 ### Anpassung
 
@@ -87,6 +90,22 @@ vertretungsanalyse-addin/
 
 - Der OpenAI API-Schlüssel wird lokal im Browser-Speicher gespeichert. In einer Produktionsumgebung sollte eine sicherere Methode zur Speicherung verwendet werden.
 - Die API-Anfragen sollten über einen sicheren Backend-Dienst erfolgen, um den API-Schlüssel zu schützen und Rate-Limiting, Fehlerbehandlung usw. zu handhaben.
+
+## Kompatibilität
+
+### Outlook Web App (OWA)
+
+Das Add-in ist mit Outlook Web App (OWA) kompatibel, beachten Sie jedoch folgende Punkte:
+
+- Die Office.js-Version wurde auf 1.3 aktualisiert, um die neuesten Features zu unterstützen.
+- Die API-Schlüsselspeicherung verwendet sowohl localStorage als auch roamingSettings, um in verschiedenen Umgebungen zu funktionieren.
+- Verbesserte Fehlerbehandlung für API-Aufrufe und Netzwerkprobleme.
+- Die AppDomains-Liste enthält alle notwendigen Domains für die Kommunikation mit OpenAI und Outlook-Servern.
+
+### Outlook Desktop
+
+- Für die Sideload-Funktionalität wird Outlook Version 16.0.13709 oder höher benötigt.
+- Wenn Ihre Outlook-Version älter ist, können Sie das Add-in manuell installieren (siehe Installation).
 
 ## Lizenz
 
