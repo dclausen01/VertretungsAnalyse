@@ -1,0 +1,28 @@
+ICON PLACEHOLDERS
+
+For a complete implementation, you would need to create the following icon files:
+
+1. icon-16.png (16x16 pixels)
+2. icon-32.png (32x32 pixels)
+3. icon-80.png (80x80 pixels)
+
+These icons are referenced in the manifest.xml file and are used in various places in the Outlook UI.
+
+For development purposes, you can create simple icons using any image editing software like:
+- Adobe Photoshop
+- GIMP (free and open-source)
+- Inkscape (free and open-source)
+- Online tools like Canva or Figma
+
+Icon Design Guidelines:
+- Keep the design simple and recognizable at small sizes
+- Use a consistent color scheme that matches your brand
+- Ensure the icon is clear against both light and dark backgrounds
+- Follow Microsoft's Fluent Design System for best integration with Office
+
+Example Icon Design for Vertretungsanalyse:
+- A simple "V" or "VA" monogram
+- A stylized document with a checkmark
+- A school-related symbol like a book or graduation cap
+
+Once you have created these icons, place them in the assets directory and they will be included in the build process.

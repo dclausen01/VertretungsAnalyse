@@ -1,111 +1,101 @@
-# Vertretungsanalyse Outlook Add-in
+# Vertretungsanalyse Add-in
 
-Ein Outlook Add-in zur Analyse von Lehrermails und Erstellung strukturierter Regelungsvorschläge für die Schulsoftware UNTIS.
+Ein Outlook Add-in zur Analyse von Lehrermails und Erstellung strukturierter Regelungsvorschläge für UNTIS.
 
 ## Funktionen
 
-1. **Analyse-Button in jeder E-Mail**: Das Add-in fügt einen "Vertretungsanalyse"-Button in jede E-Mail ein.
-2. **KI-gestützte Analyse**: Bei Klick auf den Button wird die gesamte E-Mail (inklusive Header) mit einem OpenAI-Modell analysiert.
-3. **Formatierte Ausgabe**: Das Analyseergebnis wird am Anfang der E-Mail in dunkelblauer, fetter Arial-Schrift angezeigt.
+- Analysiert E-Mails von Lehrkräften
+- Extrahiert relevante Informationen wie Lehrkraft-Kürzel, Typ der Anfrage, Datum und Zeitraum
+- Erstellt strukturierte Regelungsvorschläge für UNTIS
+- Fügt Wochentage zu Datumsangaben hinzu
+- Prüft auf Berechtigungen für Küchenräume
 
-## Anforderungen
+## Entwicklung
 
-- Outlook 2019 oder neuer
-- Internetverbindung für die OpenAI API-Anfragen
-- OpenAI API-Schlüssel
+### Voraussetzungen
 
-## Installation
+- Node.js (empfohlen: neueste LTS-Version)
+- npm (wird mit Node.js installiert)
+- Git
 
-### Entwicklungsumgebung
+### Installation
 
-1. Klonen Sie das Repository:
+1. Repository klonen:
    ```
-   git clone https://github.com/yourusername/vertretungsanalyse-addin.git
-   cd vertretungsanalyse-addin
+   git clone https://github.com/dclausen01/VertretungsAnalyse.git
+   cd VertretungsAnalyse
    ```
 
-2. Installieren Sie die Abhängigkeiten:
+2. Abhängigkeiten installieren:
    ```
    npm install
    ```
 
-3. Starten Sie den Entwicklungsserver:
+3. Entwicklungsserver starten:
    ```
    npm start
    ```
 
-### Installation in Outlook
+### Entwicklungsmodus
 
-#### Während der Entwicklung
+Im Entwicklungsmodus wird das Add-in lokal auf https://localhost:3000 gehostet. Der Befehl `npm start` startet den Entwicklungsserver und öffnet das Add-in in Outlook.
 
-1. Öffnen Sie Outlook 2019.
-2. Gehen Sie zu "Datei" > "Optionen" > "Add-Ins".
-3. Klicken Sie auf "Verwalten" (COM-Add-Ins) und dann auf "Durchsuchen".
-4. Navigieren Sie zum Manifest-Datei (manifest.xml) im Projektverzeichnis und wählen Sie diese aus.
-5. Folgen Sie den Anweisungen auf dem Bildschirm, um die Installation abzuschließen.
+## Deployment auf GitHub Pages
 
-#### Für Produktionsumgebungen
+### Vorbereitung
 
-Für die Bereitstellung in einer Produktionsumgebung sollten Sie das Add-in paketieren und über einen der folgenden Wege verteilen:
+1. Stellen Sie sicher, dass GitHub Pages für Ihr Repository aktiviert ist:
+   - Gehen Sie zu Ihrem Repository auf GitHub
+   - Klicken Sie auf "Settings" > "Pages"
+   - Wählen Sie unter "Source" die Option "Deploy from a branch"
+   - Wählen Sie unter "Branch" den Branch "main" und den Ordner "/docs"
+   - Klicken Sie auf "Save"
 
-- Direktes Teilen der Manifest-Datei
-- Bereitstellung über einen Webserver
-- Veröffentlichung im Microsoft AppSource
+### Deployment
+
+1. Führen Sie den Deployment-Befehl aus:
+   ```
+   npm run deploy
+   ```
+
+2. Commit und Push der generierten Dateien:
+   ```
+   git add docs
+   git commit -m "Deploy to GitHub Pages"
+   git push origin main
+   ```
+
+3. Überprüfen Sie die Deployment-URL:
+   - Ihre Add-in-Dateien sind nun unter `https://dclausen01.github.io/VertretungsAnalyse/` verfügbar
+   - Das Manifest für die Produktion ist unter `https://dclausen01.github.io/VertretungsAnalyse/manifest.xml` verfügbar
+
+## Installation des Add-ins in Outlook
+
+### Entwicklungsversion (lokal)
+
+1. Starten Sie den Entwicklungsserver mit `npm start`
+2. Outlook wird automatisch geöffnet und das Add-in wird geladen
+
+### Produktionsversion (GitHub Pages)
+
+1. Öffnen Sie Outlook im Web oder Desktop
+2. Klicken Sie auf "..." oder "Get Add-ins" in der Menüleiste
+3. Wählen Sie "My Add-ins" > "Add a custom add-in" > "Add from URL"
+4. Geben Sie die URL zum Manifest ein: `https://dclausen01.github.io/VertretungsAnalyse/manifest.xml`
+5. Klicken Sie auf "OK" oder "Add"
 
 ## Verwendung
 
-1. Öffnen Sie eine E-Mail in Outlook.
-2. Klicken Sie auf den "Vertretungsanalyse"-Button in der Menüleiste.
-3. Bei der ersten Verwendung werden Sie aufgefordert, Ihren OpenAI API-Schlüssel einzugeben.
-4. Das Add-in analysiert die E-Mail und zeigt das Ergebnis im Aufgabenbereich an.
-5. In einer vollständigen Implementierung würde das Analyseergebnis auch am Anfang der E-Mail eingefügt werden.
+1. Öffnen Sie eine E-Mail in Outlook
+2. Klicken Sie auf die Schaltfläche "Vertretungsanalyse" in der Menüleiste
+3. Klicken Sie im Taskpane auf "E-Mail analysieren"
+4. Die Analyse wird angezeigt und kann für UNTIS verwendet werden
 
-## Entwicklung
+## Fehlerbehebung
 
-### Projektstruktur
-
-```
-vertretungsanalyse-addin/
-├── assets/                  # Bilder und Icons
-├── src/
-│   ├── commands/            # Befehlsimplementierungen
-│   ├── helpers/             # Hilfsfunktionen
-│   ├── services/            # Dienste (z.B. OpenAI API)
-│   └── taskpane/            # Hauptlogik und UI
-├── VertretungsAnalyse/      # Referenz-Template (nicht für Produktion)
-├── manifest.xml             # Add-in-Manifest (Hauptversion)
-├── package.json             # Projektkonfiguration
-└── webpack.config.js        # Build-Konfiguration
-```
-
-**Hinweis:** Der Ordner `VertretungsAnalyse` enthält eine ältere Template-Version des Add-ins und wird nur als Referenz beibehalten. Für die Entwicklung und Bereitstellung sollte die Hauptversion des Projekts verwendet werden.
-
-### Anpassung
-
-- Die OpenAI-Prompt kann in der Datei `src/services/openai-service.js` angepasst werden.
-- Das UI-Design kann in der Datei `src/taskpane/taskpane.html` und den zugehörigen CSS-Stilen angepasst werden.
-- Die Logik für die Analyse und Anzeige der Ergebnisse kann in der Datei `src/taskpane/taskpane.js` angepasst werden.
-
-## Sicherheitshinweise
-
-- Der OpenAI API-Schlüssel wird lokal im Browser-Speicher gespeichert. In einer Produktionsumgebung sollte eine sicherere Methode zur Speicherung verwendet werden.
-- Die API-Anfragen sollten über einen sicheren Backend-Dienst erfolgen, um den API-Schlüssel zu schützen und Rate-Limiting, Fehlerbehandlung usw. zu handhaben.
-
-## Kompatibilität
-
-### Outlook Web App (OWA)
-
-Das Add-in ist mit Outlook Web App (OWA) kompatibel, beachten Sie jedoch folgende Punkte:
-
-- Die Office.js-Version wurde auf 1.3 aktualisiert, um die neuesten Features zu unterstützen.
-- Die API-Schlüsselspeicherung verwendet sowohl localStorage als auch roamingSettings, um in verschiedenen Umgebungen zu funktionieren.
-- Verbesserte Fehlerbehandlung für API-Aufrufe und Netzwerkprobleme.
-- Die AppDomains-Liste enthält alle notwendigen Domains für die Kommunikation mit OpenAI und Outlook-Servern.
-
-### Outlook Desktop
-
-- Für die Sideload-Funktionalität wird Outlook Version 16.0.13709 oder höher benötigt.
-- Wenn Ihre Outlook-Version älter ist, können Sie das Add-in manuell installieren (siehe Installation).
+- **API-Schlüssel-Fehler**: Stellen Sie sicher, dass Sie einen gültigen OpenAI API-Schlüssel eingegeben haben
+- **Netzwerkfehler**: Überprüfen Sie Ihre Internetverbindung
+- **Add-in wird nicht geladen**: Stellen Sie sicher, dass die URL zum Manifest korrekt ist
 
 ## Lizenz
 

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vertretungsanalyse Add-in (Debug)</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #status {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        .success {
+            background-color: #dff6dd;
+            border-color: #72b16a;
+        }
+        .error {
+            background-color: #fde7e9;
+            border-color: #f1707b;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Vertretungsanalyse Debug</h1>
+    
+    <div id="status">Loading...</div>
+    
+    <button id="check-office" onclick="checkOffice()">Check Office.js</button>
+    <button id="check-mailbox" onclick="checkMailbox()">Check Mailbox</button>
+    <button id="check-item" onclick="checkItem()">Check Current Item</button>
+    
+    <script>
+        // Log initialization
+        document.getElementById('status').textContent = 'Script started...';
+        
+        // Global variables
+        var officeInitialized = false;
+        var mailboxAvailable = false;
+        var itemAvailable = false;
+        
+        // Function to update status
+        function updateStatus(message, isSuccess) {
+            var statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            statusElement.className = isSuccess ? 'success' : 'error';
+        }
+        
+        // Check if Office.js is available
+        function checkOffice() {
+            try {
+                if (typeof Office !== 'undefined') {
+                    updateStatus('Office.js is available!', true);
+                } else {
+                    updateStatus('Office.js is NOT available!', false);
+                }
+            } catch (error) {
+                updateStatus('Error checking Office.js: ' + error.message, false);
+            }
+        }
+        
+        // Check if mailbox is available
+        function checkMailbox() {
+            try {
+                if (typeof Office !== 'undefined' && Office.context && Office.context.mailbox) {
+                    updateStatus('Mailbox is available!', true);
+                    mailboxAvailable = true;
+                } else {
+                    updateStatus('Mailbox is NOT available!', false);
+                }
+            } catch (error) {
+                updateStatus('Error checking mailbox: ' + error.message, false);
+            }
+        }
+        
+        // Check if current item is available
+        function checkItem() {
+            try {
+                if (mailboxAvailable && Office.context.mailbox.item) {
+                    var subject = Office.context.mailbox.item.subject || 'No subject';
+                    updateStatus('Current item is available! Subject: ' + subject, true);
+                    itemAvailable = true;
+                } else {
+                    updateStatus('Current item is NOT available!', false);
+                }
+            } catch (error) {
+                updateStatus('Error checking item: ' + error.message, false);
+            }
+        }
+        
+        // Load Office.js dynamically
+        function loadOfficeJs() {
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js';
+            script.onload = function() {
+                updateStatus('Office.js loaded!', true);
+                
+                // Initialize Office
+                Office.initialize = function(reason) {
+                    officeInitialized = true;
+                    updateStatus('Office initialized! Reason: ' + reason, true);
+                    
+                    // Check if mailbox is available
+                    if (Office.context && Office.context.mailbox) {
+                        mailboxAvailable = true;
+                        updateStatus('Mailbox is available after initialization!', true);
+                    }
+                };
+            };
+            script.onerror = function() {
+                updateStatus('Failed to load Office.js!', false);
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Start loading Office.js
+        updateStatus('Loading Office.js...', false);
+        loadOfficeJs();
+    </script>
+</body>
+</html>

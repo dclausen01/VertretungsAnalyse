@@ -75,12 +75,62 @@ function getEmailBody(item) {
  * @returns {Promise<object>} - The email headers
  */
 function getEmailHeaders(item) {
-  return {
-    subject: item.subject,
-    from: item.from ? item.from.emailAddress : "",
-    to: item.to ? item.to.map(recipient => recipient.emailAddress).join("; ") : "",
-    cc: item.cc ? item.cc.map(recipient => recipient.emailAddress).join("; ") : ""
-  };
+  try {
+    // Safely extract subject
+    const subject = item.subject || "[Kein Betreff]";
+    
+    // Safely extract from address
+    let fromAddress = "";
+    if (item.from) {
+      try {
+        fromAddress = item.from.emailAddress || "";
+      } catch (e) {
+        console.warn("Error extracting from address:", e);
+      }
+    }
+    
+    // Safely extract to addresses
+    let toAddresses = "";
+    if (item.to && Array.isArray(item.to)) {
+      try {
+        toAddresses = item.to
+          .filter(recipient => recipient && recipient.emailAddress)
+          .map(recipient => recipient.emailAddress)
+          .join("; ");
+      } catch (e) {
+        console.warn("Error extracting to addresses:", e);
+      }
+    }
+    
+    // Safely extract cc addresses
+    let ccAddresses = "";
+    if (item.cc && Array.isArray(item.cc)) {
+      try {
+        ccAddresses = item.cc
+          .filter(recipient => recipient && recipient.emailAddress)
+          .map(recipient => recipient.emailAddress)
+          .join("; ");
+      } catch (e) {
+        console.warn("Error extracting cc addresses:", e);
+      }
+    }
+    
+    return {
+      subject: subject,
+      from: fromAddress,
+      to: toAddresses,
+      cc: ccAddresses
+    };
+  } catch (error) {
+    console.error("Error getting email headers:", error);
+    // Return default values if there's an error
+    return {
+      subject: "[Fehler beim Lesen des Betreffs]",
+      from: "",
+      to: "",
+      cc: ""
+    };
+  }
 }
 
 /**
@@ -124,12 +174,18 @@ async function getOrPromptForApiKey() {
         // Continue anyway, we'll still try roaming settings
       }
       
-      try {
-        storeInRoamingSettings('openai_api_key', apiKey);
-      } catch (error) {
-        console.warn("Could not store API key in roaming settings:", error);
-        // If both storage methods fail, we'll just use the key for this session
-      }
+      // Store in roaming settings (returns a Promise)
+      storeInRoamingSettings('openai_api_key', apiKey)
+        .then(success => {
+          if (!success) {
+            console.warn("Could not store API key in roaming settings");
+          }
+        })
+        .catch(error => {
+          console.warn("Error storing API key in roaming settings:", error);
+        });
+      
+      // Even if storage fails, we'll still use the key for this session
     }
     
     return apiKey;
@@ -205,10 +261,22 @@ ${analysis.replace(/\n/g, '<br>')}
     // This could be used in a production scenario to avoid duplicate analyses
     item.loadCustomPropertiesAsync(function(result) {
       if (result.status === Office.AsyncResultStatus.Succeeded) {
-        const props = result.value;
-        props.set("vertretungsanalyse_processed", true);
-        props.set("vertretungsanalyse_result", analysis);
-        props.saveAsync();
+        try {
+          const props = result.value;
+          props.set("vertretungsanalyse_processed", true);
+          props.set("vertretungsanalyse_result", analysis);
+          
+          // Add error handling for saveAsync
+          props.saveAsync(function(saveResult) {
+            if (saveResult.status !== Office.AsyncResultStatus.Succeeded) {
+              console.error("Error saving custom properties:", saveResult.error.message);
+            }
+          });
+        } catch (error) {
+          console.error("Error setting custom properties:", error);
+        }
+      } else {
+        console.error("Error loading custom properties:", result.error.message);
       }
     });
     
